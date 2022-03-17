@@ -170,4 +170,91 @@ pub mod dapp {
             self.balances.get(owner).unwrap_or_default()
         }
     }
+
+    #[cfg(test)]
+    mod tests {
+        use ink_env::hash::Blake2x256;
+        use ink_env::hash::CryptoHash;
+        use ink_env::hash::HashOutput;
+        use ink_lang as ink;
+
+        use super::*;
+
+        use prosopo::Prosopo;
+        use prosopo::prosopo::{ Payee, CaptchaStatus };
+
+        /// Provider Register Helper
+        fn generate_provider_data(id: u8, port: &str, fee: u32) -> (AccountId, Hash, u32) {
+            let provider_account = AccountId::from([id; 32]);
+            let service_origin = str_to_hash(format!("https://localhost:{}", port));
+
+            (provider_account, service_origin, fee)
+        }
+
+        /// Helper function for converting string to Hash
+        fn str_to_hash(str: String) -> Hash {
+            let mut result = Hash::default();
+            let len_result = result.as_ref().len();
+            let mut hash_output = <<Blake2x256 as HashOutput>::Type as Default>::default();
+            <Blake2x256 as CryptoHash>::hash((&str).as_ref(), &mut hash_output);
+            let copy_len = core::cmp::min(hash_output.len(), len_result);
+            result.as_mut()[0..copy_len].copy_from_slice(&hash_output[0..copy_len]);
+            result
+        }
+
+        #[ink::test]
+        fn test_is_human() {
+            let contract = Dapp::new(1000, 1000, AccountId::from([0x1; 32]), 80);
+
+            let operator_account = AccountId::from([0x2; 32]);
+
+            // initialise the contract
+            let mut prosopo_contract = Prosopo::default(operator_account);
+
+            // Register the provider
+            let (provider_account, service_origin, fee) = generate_provider_data(0x3, "4242", 0);
+            prosopo_contract
+                .provider_register(service_origin, fee, Payee::Provider, provider_account)
+                .unwrap();
+
+            // Call from the provider account to add data and stake tokens
+            let balance = 100;
+            ink_env::test::set_caller::<ink_env::DefaultEnvironment>(provider_account);
+            let root = str_to_hash("merkle tree root".to_string());
+            ink_env::test::set_value_transferred::<ink_env::DefaultEnvironment>(balance);
+            prosopo_contract.provider_update(service_origin, fee, Payee::Provider, provider_account);
+            // can only add data set after staking
+            prosopo_contract.provider_add_dataset(root).ok();
+
+            // Register the dapp
+            let dapp_caller_account = AccountId::from([0x4; 32]);
+            let dapp_contract_account = AccountId::from([0x5; 32]);
+
+            // Call from the dapp account
+            ink_env::test::set_caller::<ink_env::DefaultEnvironment>(dapp_caller_account);
+            // Give the dap a balance
+            let balance = 100;
+            ink_env::test::set_value_transferred::<ink_env::DefaultEnvironment>(balance);
+            let client_origin = service_origin.clone();
+            prosopo_contract.dapp_register(client_origin, dapp_contract_account, None);
+
+            //Dapp User commit
+            let dapp_user_account = AccountId::from([0x6; 32]);
+            // Call from the Dapp User Account
+            ink_env::test::set_caller::<ink_env::DefaultEnvironment>(dapp_user_account);
+            let user_root = str_to_hash("user merkle tree root".to_string());
+            prosopo_contract
+                .dapp_user_commit(dapp_contract_account, root, user_root, provider_account)
+                .ok();
+
+            // Call from the provider account to mark the solution as approved
+            ink_env::test::set_caller::<ink_env::DefaultEnvironment>(provider_account);
+            let solution_id = user_root;
+            prosopo_contract.provider_approve(solution_id, 100);
+
+            // not sure what to do assert here since in test env, blockstamps are always 0
+            // TODO (thread 'dapp::tests::test_is_human' panicked at 'not implemented: off-chain environment does not support contract invocation):
+            // assert_eq!(contract.is_human(dapp_user_account, contract.human_threshold), false);
+        }
+    }
 }
