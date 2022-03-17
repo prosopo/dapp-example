@@ -98,7 +98,10 @@ pub mod dapp {
         #[ink(message)]
         pub fn is_human(&self, accountid: AccountId, threshold: u8) -> bool {
             let mut prosopo_instance: ProsopoRef = ink_env::call::FromAccountId::from_account_id(self.prosopo_account);
-            prosopo_instance.dapp_operator_is_human_user(accountid, threshold).unwrap()
+            let last_correct_captcha = prosopo_instance.dapp_operator_last_correct_captcha(accountid).unwrap();
+            // lets say that dapp requires confirmation every day
+            let less_than_a_day_ago = last_correct_captcha.before_ms < 24 * 60 * 60 * 1000;
+            prosopo_instance.dapp_operator_is_human_user(accountid, threshold).unwrap() && less_than_a_day_ago
         }
 
         /// Transfers `value` amount of tokens from the caller's account to account `to`.
