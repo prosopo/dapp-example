@@ -25,9 +25,6 @@
     "@redspot/watcher": "0.13.6",
     "redspot": "0.13.6"
   },
-  "devDependencies": {
-    "typescript": "^4.5.5"
-  },
   "module": "true",
   "scripts": {
     "build": "yarn redspot compile",
