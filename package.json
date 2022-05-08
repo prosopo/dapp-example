@@ -17,8 +17,6 @@
     "rxjs": "7.5.5"
   },
   "dependencies": {
-    "@polkadot/util-crypto": "8.5.1",
-    "@polkadot/x-fetch": "8.5.1",
     "@redspot/chai": "0.13.6",
     "@redspot/decimals": "0.13.6",
     "@redspot/explorer": "0.13.6",
