@@ -26,7 +26,9 @@ cargo +nightly contract build
 
 Then deploy the contract to a substrate node after populating the various arguments. For examples, of these arguments, please see the [docker file](https://github.com/prosopo-io/dapp-example/blob/develop/docker/contracts.dapp.dockerfile).
 
-#### Command Line Deploy
+#### Deploy via the Command Line
+
+Use [cargo contract](https://github.com/paritytech/cargo-contract).
 
 ```bash
 $CONTRACT_ARGS = "$DAPP_CONTRACT_ARGS_INITIAL_SUPPLY $DAPP_CONTRACT_ARGS_FAUCET_AMOUNT $CONTRACT_ADDRESS $DAPP_CONTRACT_ARGS_HUMAN_THRESHOLD $DAPP_CONTRACT_ARGS_RECENCY_THRESHOLD"
@@ -34,7 +36,7 @@ cargo contract instantiate $WASM --args $CONTRACT_ARGS --constructor $CONSTRUCTO
 
 ```
 
-#### UI deploy
+#### Deploy via a User Interfacae
 
 Use [polkadot apps](https://polkadot.js.org/apps/) contract page.
 
