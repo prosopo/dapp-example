@@ -5,12 +5,10 @@ authors = ["Chris Taylor chris@prosopo.io"]
 edition = "2021"
 
 [dependencies]
-ink = { path = "/home/chris/dev/ink/crates/ink", default-features = false }
-ink_primitives = {  path = "/home/chris/dev/ink/crates/primitives", default-features = false }
-ink_storage = {  path = "/home/chris/dev/ink/crates/storage", default-features = false }
+ink = { version = "4.0.0-alpha.3", default-features = false }
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.3", default-features = false, features = ["derive"], optional = true }
-prosopo = { path = "/home/chris/dev/prosopo/protocol/contracts", default-features = false, features = ["ink-as-dependency"] }
+prosopo = { git = "https://github.com/prosopo/protocol", branch = "inkv4", default-features = false, features = ["ink-as-dependency"] }
 
 [lib]
 name = "dapp"

@@ -20,10 +20,7 @@ use ink;
 #[ink::contract]
 pub mod dapp {
     use prosopo::ProsopoRef;
-    use ink_storage::{
-        Mapping,
-    };
-
+    use ink::storage::Mapping;
     #[ink(storage)]
     pub struct Dapp {
         /// Total token supply.
