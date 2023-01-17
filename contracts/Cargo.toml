@@ -1,19 +1,16 @@
 [package]
 name = "dapp"
-version = "3.0.1"
+version = "4.0.0-beta"
 authors = ["Chris Taylor chris@prosopo.io"]
 edition = "2021"
 
 [dependencies]
-ink_primitives = { git = "https://github.com/paritytech/ink", version = "3.0.1", default-features = false }
-ink_metadata = { git = "https://github.com/paritytech/ink", version = "3.0.1", default-features = false, features = ["derive"], optional = true }
-ink_env = { git = "https://github.com/paritytech/ink", version = "3.0.1", default-features = false }
-ink_storage = { git = "https://github.com/paritytech/ink", version = "3.0.1", default-features = false }
-ink_lang = { git = "https://github.com/paritytech/ink", version = "3.0.1", default-features = false }
-ink_prelude = { git = "https://github.com/paritytech/ink", version = "3.0.1", default-features = false }
+ink = { path = "/home/chris/dev/ink/crates/ink", default-features = false }
+ink_primitives = {  path = "/home/chris/dev/ink/crates/primitives", default-features = false }
+ink_storage = {  path = "/home/chris/dev/ink/crates/storage", default-features = false }
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
-scale-info = { version = "2", default-features = false, features = ["derive"], optional = true }
-prosopo = { git = "https://github.com/prosopo/protocol", branch = "master", default-features = false, features = ["ink-as-dependency"] }
+scale-info = { version = "2.3", default-features = false, features = ["derive"], optional = true }
+prosopo = { path = "/home/chris/dev/prosopo/protocol/contracts", default-features = false, features = ["ink-as-dependency"] }
 
 [lib]
 name = "dapp"
@@ -23,20 +20,12 @@ crate-type = [
     "cdylib",
     "rlib"
 ]
-# Needed until https://github.com/paritytech/ink/issues/364 is resolved.
-[profile.release]
-overflow-checks = false
 
 [features]
-default = ["std"]
 std = [
-    "ink_metadata/std",
-    "ink_env/std",
-    "ink_storage/std",
-    "ink_primitives/std",
-    "ink_prelude/std",
+    "ink/std",
+    "prosopo/std",
     "scale/std",
     "scale-info/std",
-    "prosopo/std"
 ]
 ink-as-dependency = []

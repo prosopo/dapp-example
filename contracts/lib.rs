@@ -15,18 +15,16 @@
 // along with provider.  If not, see <http://www.gnu.org/licenses/>.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use ink_lang as ink;
+use ink;
 
 #[ink::contract]
 pub mod dapp {
     use prosopo::ProsopoRef;
     use ink_storage::{
         Mapping,
-        traits::SpreadAllocate,
     };
 
     #[ink(storage)]
-    #[derive(SpreadAllocate)]
     pub struct Dapp {
         /// Total token supply.
         total_supply: Balance,
@@ -69,19 +67,23 @@ pub mod dapp {
         /// `prosopo` contract
         #[ink(constructor, payable)]
         pub fn new(initial_supply: Balance, faucet_amount: Balance, prosopo_account: AccountId, human_threshold: u8, recency_threshold: u32) -> Self {
-            ink_lang::codegen::initialize_contract(|contract| Self::new_init(contract, initial_supply, faucet_amount, prosopo_account, human_threshold, recency_threshold))
+            let caller = Self::env().caller();
+            let mut balances = Mapping::new();
+            balances.insert( &caller, &initial_supply);
+            Self {
+               balances,
+                total_supply : initial_supply,
+                faucet_amount,
+                token_holder:caller,
+                human_threshold,
+                recency_threshold ,
+                prosopo_account,
+            }
         }
 
         /// Default initializes the ERC-20 contract with the specified initial supply.
         fn new_init(&mut self, initial_supply: Balance, faucet_amount: Balance, prosopo_account: AccountId, human_threshold: u8, recency_threshold: u32) {
-            let caller = Self::env().caller();
-            self.balances.insert(&caller, &initial_supply);
-            self.total_supply = initial_supply;
-            self.faucet_amount = faucet_amount;
-            self.token_holder = caller;
-            self.human_threshold = human_threshold;
-            self.recency_threshold = recency_threshold;
-            self.prosopo_account = prosopo_account;
+
             // Events not working due to bug https://github.com/paritytech/ink/issues/1000
             // self.env().emit_event(Transfer {
             //     from: None,
@@ -105,11 +107,10 @@ pub mod dapp {
         /// Calls the `Prosopo` contract to check if `accountid` is human
         #[ink(message)]
         pub fn is_human(&self, accountid: AccountId, threshold: u8, recency: u32) -> bool {
-            let prosopo_instance: ProsopoRef = ink_env::call::FromAccountId::from_account_id(self.prosopo_account);
-            prosopo_instance.dapp_operator_is_human_user(accountid, threshold).unwrap();
+            let prosopo_instance: ProsopoRef = ink::env::call::FromAccountId::from_account_id(self.prosopo_account);
             // check that the captcha was completed within the last X seconds
             let last_correct_captcha = prosopo_instance.dapp_operator_last_correct_captcha(accountid).unwrap();
-            return last_correct_captcha.before_ms <= recency && prosopo_instance.dapp_operator_is_human_user(accountid, threshold).unwrap()
+            return last_correct_captcha.before_ms <= recency && prosopo_instance.dapp_operator_is_human_user(accountid, threshold)
         }
 
         /// Transfers `value` amount of tokens from the caller's account to account `to`.
