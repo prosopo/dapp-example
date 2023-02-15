@@ -5,18 +5,17 @@ authors = ["Chris Taylor chris@prosopo.io"]
 edition = "2021"
 
 [dependencies]
-ink = { version = "4.0.0-beta", default-features = false }
+ink = { git = "https://github.com/paritytech/ink", rev="50b32f4e49d4072f3d28009eb517475b68bec56b", default-features = false }
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.3", default-features = false, features = ["derive"], optional = true }
-prosopo = { git = "https://github.com/prosopo/protocol", branch = "inkv4", default-features = false, features = ["ink-as-dependency"] }
-
+prosopo = { git = "https://github.com/prosopo/protocol", branch = "v4.0.0-rc-for-real", default-features = false, features = ["ink-as-dependency"] }
+q
 [lib]
 name = "dapp"
 path = "lib.rs"
 crate-type = [
     # Used for normal contract Wasm blobs.
     "cdylib",
-    "rlib"
 ]
 
 [features]
