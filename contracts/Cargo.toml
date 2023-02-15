@@ -9,7 +9,7 @@ ink = { git = "https://github.com/paritytech/ink", rev="50b32f4e49d4072f3d28009e
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.3", default-features = false, features = ["derive"], optional = true }
 prosopo = { git = "https://github.com/prosopo/protocol", branch = "v4.0.0-rc-for-real", default-features = false, features = ["ink-as-dependency"] }
-q
+
 [lib]
 name = "dapp"
 path = "lib.rs"
