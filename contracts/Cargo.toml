@@ -8,7 +8,7 @@ edition = "2021"
 ink = { git = "https://github.com/paritytech/ink", rev="ad4f5e579e39926704e182736af4fa945982ac2b", default-features = false }
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.3", default-features = false, features = ["derive"], optional = true }
-prosopo = { git = "https://github.com/prosopo/protocol", branch = "v4.0.0-rc-for-real", default-features = false, features = ["ink-as-dependency"] }
+prosopo = { path = "../../protocol/contracts", default-features = false, features = ["ink-as-dependency"] }
 
 [lib]
 name = "dapp"
